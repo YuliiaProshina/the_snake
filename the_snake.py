@@ -42,7 +42,7 @@ clock = pg.time.Clock()
 class GameObject:
     """Определение родительского игрового класса"""
 
-    def __init__(self, color) -> None:
+    def __init__(self, color=BOARD_BACKGROUND_COLOR) -> None:
         self.position = (SCREEN_WIDTH // 2), (SCREEN_HEIGHT // 2)
         self.body_color = color
 
@@ -58,7 +58,7 @@ class GameObject:
 class Apple(GameObject):
     """Определение дочернего класса Яблоко"""
 
-    def __init__(self, busy_positions):
+    def __init__(self, busy_positions=[]):
         super().__init__(APPLE_COLOR)
         self.randomize_position(busy_positions)
 
@@ -187,10 +187,10 @@ def main():
 
         if snake_head == apple.position:
             snake.length += 1
-            snake.move(True)
+            snake.move()
             apple.randomize_position(snake.positions)
         else:
-            snake.move(False)
+            snake.move()
 
 
 if __name__ == '__main__':

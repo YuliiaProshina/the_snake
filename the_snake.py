@@ -58,7 +58,7 @@ class GameObject:
 class Apple(GameObject):
     """Определение дочернего класса Яблоко"""
 
-    def __init__(self, busy_positions=[]):
+    def __init__(self, busy_positions=()):
         super().__init__(APPLE_COLOR)
         self.randomize_position(busy_positions)
 

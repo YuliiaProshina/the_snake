@@ -52,7 +52,9 @@ class GameObject:
 
     def draw_cell(self, position):
         """Отрисовка одной ячейки"""
-        return pg.Rect(position, (GRID_SIZE, GRID_SIZE))
+        rect = pg.Rect(position, (GRID_SIZE, GRID_SIZE))
+        pg.draw.rect(screen, self.body_color, rect)
+        pg.draw.rect(screen, BORDER_COLOR, rect, 1)
 
 
 class Apple(GameObject):
@@ -64,17 +66,14 @@ class Apple(GameObject):
 
     def draw(self):
         """'Отрисовка яблока на игровом поле"""
-        rect = self.draw_cell(self.position)
-        pg.draw.rect(screen, self.body_color, rect)
-        pg.draw.rect(screen, BORDER_COLOR, rect, 1)
+        self.draw_cell(self.position)
 
     def randomize_position(self, positions):
         """Установка рандомной позиции яблока на поле"""
         while True:
-            new_position = (randint(0, GRID_WIDTH - 1) * GRID_SIZE,
-                            randint(0, GRID_HEIGHT - 1) * GRID_SIZE)
-            if new_position not in positions:
-                self.position = new_position
+            self.position = (randint(0, GRID_WIDTH - 1) * GRID_SIZE,
+                             randint(0, GRID_HEIGHT - 1) * GRID_SIZE)
+            if self.position not in positions:
                 break
 
 
@@ -95,19 +94,12 @@ class Snake(GameObject):
 
     def move(self):
         """Перемещение змейки по игровому полю"""
-        position_head_of_snake = self.get_head_position()
-        if self.direction == RIGHT or self.direction == LEFT:
-            new_coordinate_x = (position_head_of_snake[0] + self.direction[0]
-                                * GRID_SIZE) % SCREEN_WIDTH
-            self.positions.insert(0,
-                                  (new_coordinate_x, position_head_of_snake[1])
-                                  )
-        elif self.direction == UP or self.direction == DOWN:
-            new_coordinate_y = (position_head_of_snake[1] + self.direction[1]
-                                * GRID_SIZE) % SCREEN_HEIGHT
-            self.positions.insert(0,
-                                  (position_head_of_snake[0], new_coordinate_y)
-                                  )
+        position_x, position_y = self.get_head_position()
+        new_coordinate_x = (position_x + self.direction[0]
+                            * GRID_SIZE) % SCREEN_WIDTH
+        new_coordinate_y = (position_y + self.direction[1]
+                            * GRID_SIZE) % SCREEN_HEIGHT
+        self.positions.insert(0, (new_coordinate_x, new_coordinate_y))
 
         if self.length < len(self.positions):
             self.last = self.positions.pop()
@@ -115,17 +107,12 @@ class Snake(GameObject):
     def draw(self):
         """Отрисовка змейки на игровом поле"""
         for position in self.positions[:-1]:
-            rect = self.draw_cell(position)
-            pg.draw.rect(screen, self.body_color, rect)
-            pg.draw.rect(screen, BORDER_COLOR, rect, 1)
-
-        head_rect = self.draw_cell(self.get_head_position())
-        pg.draw.rect(screen, self.body_color, head_rect)
-        pg.draw.rect(screen, BORDER_COLOR, head_rect, 1)
+            self.draw_cell(position)
+        self.draw_cell(self.get_head_position())
 
         if self.last:
-            last_rect = self.draw_cell(self.last)
-            pg.draw.rect(screen, BOARD_BACKGROUND_COLOR, last_rect)
+            pg.draw.rect(screen, BOARD_BACKGROUND_COLOR,
+                         pg.Rect(self.last, (GRID_SIZE, GRID_SIZE)))
 
     def get_head_position(self):
         """Возвращает координаты головы змейки"""
